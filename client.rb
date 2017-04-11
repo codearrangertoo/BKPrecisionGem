@@ -7,30 +7,32 @@ require 'time'
 require 'collectd'
 require 'pp'
 
-Collectd.add_server(10, '192.168.1.100', 25826)
-
-Stats = Collectd.lab(:battery)
 
 @dcload = BKP::M8500.new({
-      :port_str => "/dev/ttyUSB0",
+      :port_str => "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0",
       :baud_rate => 4800,
       :data_bits => 8,
       :stop_bits => 1,
       :parity => SerialPort::NONE})
 
 @power = BKP::M1900B.new({
-      :port_str => "/dev/ttyUSB1",
+      :port_str => "/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0",
       :baud_rate => 9600,
       :data_bits => 8,
       :stop_bits => 1,
       :parity => SerialPort::NONE})
 
 @dmm = BKP::M2831E.new({
-      :port_str => "/dev/ttyUSB2",
+      :port_str => "/dev/serial/by-id/usb-Silicon_Labs_2831E_Multimeter_0001-if00-port0",
       :baud_rate => 9600,
       :data_bits => 8,
       :stop_bits => 1,
       :parity => SerialPort::NONE})
+
+Collectd.add_server(10, '192.168.1.100', 25826)
+
+Stats = Collectd.lab(:battery)
+
 
 def bin_to_hex(s)
   s.each.map { |b| '0x' + b.to_s(16) }.join(' ')

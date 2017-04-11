@@ -46,7 +46,7 @@ def charge(volts, amps)
 	pp @dcload.Remote(false)
 
 	sleep 1
-	
+
 	puts @power.volt(volts)
 	puts @power.curr(amps)
 
@@ -57,14 +57,25 @@ end
 def discharge(amps)
 	#turn off the power supply
 	puts @power.sout(false)
-	
+
 	sleep 1
-	
+
 	pp @dcload.Remote(true)
 	pp @dcload.SetCurrent(amps)
 	pp @dcload.LoadEnable(true)
 	pp @dcload.Remote(false)
 end
+
+def float()
+	#turn off the power supply
+	puts @power.sout(false)
+
+	#turn off the load
+	pp @dcload.Remote(true)
+	pp @dcload.LoadEnable(false)
+	pp @dcload.Remote(false)
+end
+
 
 #pp load.Remote(true)
 #pp load.SetCurrent(15)
@@ -93,8 +104,9 @@ end
 #puts "gmax = ", gmax()
 #puts runm(1)
 
-charge(3, 30)
+#charge(3, 30)
 #discharge(15)
+float()
 
 puts @dmm.idn()
 

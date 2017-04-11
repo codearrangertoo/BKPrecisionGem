@@ -125,7 +125,7 @@ while true
 	Stats.voltage(:dmm).gauge = dmm_volts
 	Stats.current(:power).gauge = current
 	Stats.voltage(:power).gauge = volts
-  Stats.current(:power_set).gauge = set_current
+	Stats.current(:power_set).gauge = set_current
 	Stats.voltage(:power_set).gauge = set_volts
 	text = "#{time.utc.iso8601(3)}, #{dmm_volts}, #{volts}, #{current}, #{status}, #{set_current}, #{set_volts}, #{load_data[:voltage]}, #{load_data[:current]}, #{load_data[:power]}\n"
 	puts text

@@ -104,8 +104,9 @@ end
 #puts "gmax = ", gmax()
 #puts runm(1)
 
+discharge_amps = 15
 #charge(3, 30)
-#discharge(15)
+#discharge(discharge_amps)
 float()
 
 puts @dmm.idn()
@@ -131,11 +132,17 @@ while true
 	puts text
 	file.write(text)
 	file.flush
+
+	#if dmm_volts <= 0.9
+	#	discharge_amps = discharge_amps - 0.01
+	#	@dcload.Remote(true)
+	#	@dcload.SetCurrent(discharge_amps)
+	#	@dcload.Remote(false)
+	#end
+
 	delay = (Time.now - time)
-	if delay >= 0
+	if delay > 0
 		sleep 1 - delay
-	else
-		sleep 1
 	end
 end
 

@@ -105,13 +105,21 @@ end
 #puts runm(1)
 
 discharge_amps = 15
-#charge(3, 30)
+
+#charge(2.5, 30)
 #discharge(discharge_amps)
-float()
+
+#float()
 
 puts @dmm.idn()
 
 file = File.open("data.#{Process.pid}.csv", "w")
+
+max_volts = 0
+
+min_volts = 1000
+
+peak_delta = 0
 
 while true
 	time = Time.now
@@ -128,10 +136,38 @@ while true
 	Stats.voltage(:power).gauge = volts
 	Stats.current(:power_set).gauge = set_current
 	Stats.voltage(:power_set).gauge = set_volts
-	text = "#{time.utc.iso8601(3)}, #{dmm_volts}, #{volts}, #{current}, #{status}, #{set_current}, #{set_volts}, #{load_data[:voltage]}, #{load_data[:current]}, #{load_data[:power]}\n"
+
+	max_volts = dmm_volts if dmm_volts > max_volts
+	min_volts = dmm_volts if dmm_volts < min_volts
+
+	drop = (max_volts - dmm_volts).round(4) if dmm_volts <= max_volts
+
+	rise = (dmm_volts - min_volts).round(4) if min_volts <= dmm_volts
+
+	Stats.voltage(:dmm_drop).gauge = drop
+
+	Stats.voltage(:dmm_rise).gauge = rise
+
+
+	Stats.voltage(:dmm_max).gauge = max_volts
+	Stats.voltage(:dmm_min).gauge = min_volts
+
+	text = "#{time.utc.iso8601(3)}, #{dmm_volts}, #{drop}, #{rise}, #{max_volts}, #{min_volts}, #{volts}, #{current}, #{status}, #{set_current}, #{set_volts}, #{load_data[:voltage]}, #{load_data[:current]}, #{load_data[:power]}\n"
 	puts text
 	file.write(text)
 	file.flush
+
+	if volts >= (dmm_volts + 0.1) and drop >= 0.003
+		discharge(discharge_amps)
+		max_volts = 0
+		min_volts = 1000
+	end
+
+	if dmm_volts <= 0.899
+		charge(2.5, 30)
+		max_volts = 0
+		min_volts = 1000
+	end
 
 	#if dmm_volts <= 0.9
 	#	discharge_amps = discharge_amps - 0.01
@@ -140,10 +176,9 @@ while true
 	#	@dcload.Remote(false)
 	#end
 
-	delay = (Time.now - time)
-	if delay > 0
-		sleep 1 - delay
-	end
+	delay = ( 1 - (Time.now - time))
+	sleep delay if delay > 0
+
 end
 
 

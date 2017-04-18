@@ -61,7 +61,11 @@ def discharge(amps)
 	sleep 1
 
 	pp @dcload.Remote(true)
+	pp @dcload.SetMode("\x04")
+	pp @dcload.GetMode()
 	pp @dcload.SetCurrent(amps)
+	pp @dcload.SetBatMin(0.899)
+	pp @dcload.GetBatMin()
 	pp @dcload.LoadEnable(true)
 	pp @dcload.Remote(false)
 end
@@ -77,15 +81,22 @@ def float()
 end
 
 
-#pp load.Remote(true)
-#pp load.SetCurrent(15)
-#pp load.GetCurrent
+#pp @dcload.Remote(true)
+#pp @dcload.SetCurrent(15)
+#pp @dcload.GetCurrent
 
-#pp load.ReadDisplay
-#pp load.LoadEnable(false)
-#pp load.LoadEnable(false)
-#pp load.Remote(false)
+#pp @dcload.ReadDisplay
+#pp @dcload.LoadEnable(false)
+#pp @dcload.LoadEnable(false)
+#pp @dcload.Remote(false)
 
+#pp @dcload.SetBatMin(0.899)
+#pp @dcload.GetBatMin()
+#pp @dcload.GetMode()
+#pp @dcload.SetMode("\x03")
+#pp @dcload.GetMode()
+#pp @dcload.GetSense()
+#pp @dcload.Remote(false)
 
 #puts power.volt(3)
 #puts power.curr(30)
@@ -104,7 +115,12 @@ end
 #puts "gmax = ", gmax()
 #puts runm(1)
 
-discharge_amps = 15
+discharge_amps = 30
+
+#pp @dcload.Remote(true)
+#pp @dcload.LoadEnable(false)
+#pp @dcload.SetCurrent(discharge_amps)
+#pp @dcload.Remote(false)
 
 #charge(2.5, 30)
 #discharge(discharge_amps)
@@ -157,7 +173,7 @@ while true
 	file.write(text)
 	file.flush
 
-	if volts >= (dmm_volts + 0.1) and drop >= 0.003
+	if volts >= (dmm_volts + 0.1) and drop >= 0.001 and dmm_volts >= 1.7
 		discharge(discharge_amps)
 		max_volts = 0
 		min_volts = 1000
@@ -168,13 +184,6 @@ while true
 		max_volts = 0
 		min_volts = 1000
 	end
-
-	#if dmm_volts <= 0.9
-	#	discharge_amps = discharge_amps - 0.01
-	#	@dcload.Remote(true)
-	#	@dcload.SetCurrent(discharge_amps)
-	#	@dcload.Remote(false)
-	#end
 
 	delay = ( 1 - (Time.now - time))
 	sleep delay if delay > 0

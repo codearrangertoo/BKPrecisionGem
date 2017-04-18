@@ -103,6 +103,19 @@ module BKP
 			return data if CalculateChecksum(reply) == reply[25]
 		end
 
+		def GetBatMin()
+			reply = cmd(BuildPacket("\x4F"))
+			volts = reply[3..6].reverse.pack('C*').unpack("N")[0].to_i * 0.0001
+			return volts
+		end
+
+		def SetBatMin(volts)
+			reply = cmd(BuildPacket("\x4E", [(volts * 1000)].pack('V')))
+			if CalculateChecksum(reply) == reply[25]
+				return DecodeStatus(reply) if reply[2] == 18
+			end
+		end
+
 		def GetCurrent()
 			reply = cmd(BuildPacket("\x2B"))
 			current = reply[3..6].reverse.pack('C*').unpack("N")[0].to_i * 0.0001
@@ -111,6 +124,23 @@ module BKP
 
 		def SetCurrent(current)
 			reply = cmd(BuildPacket("\x2A", [(current * 10000)].pack('V')))
+			if CalculateChecksum(reply) == reply[25]
+				return DecodeStatus(reply) if reply[2] == 18
+			end
+		end
+
+		def GetSense()
+			reply = cmd(BuildPacket("\x57"))
+			return reply[3]
+		end
+
+		def GetMode()
+			reply = cmd(BuildPacket("\x5E"))
+			return reply[3]
+		end
+
+		def SetMode(mode)
+			reply = cmd(BuildPacket("\x5D", mode))
 			if CalculateChecksum(reply) == reply[25]
 				return DecodeStatus(reply) if reply[2] == 18
 			end

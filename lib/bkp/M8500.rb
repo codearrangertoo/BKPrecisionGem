@@ -95,8 +95,32 @@ module BKP
 			data = {
 				:voltage => (reply[3..6].reverse.pack('C*').unpack("N")[0].to_i * 0.001),
 				:current => (reply[7..10].reverse.pack('C*').unpack("N")[0].to_i * 0.0001),
-				:power => (reply[11..14].reverse.pack('C*').unpack("N")[0].to_i * 0.001)
+				:power => (reply[11..14].reverse.pack('C*').unpack("N")[0].to_i * 0.001),
+				:operation_state =>  sprintf('%08b', reply[15]).split("").map { |n| n.eql?('1') ? true : false },
+				:demand_state => sprintf('%010b', reply[16..17].reverse.pack('C*').unpack("N")[0].to_i).split("").map { |n| n.eql?('1') ? true : false }
 			}
+
+			data[:operation_state] = {	:demarcation_coefficient => data[:operation_state][0],
+																:trigger_wait => data[:operation_state][1],
+																:remote_control => data[:operation_state][2],
+																:output => data[:operation_state][3],
+																:local_key => data[:operation_state][4],
+																:remote_sense => data[:operation_state][5],
+																:load => data[:operation_state][6],
+																:load_timer => data[:operation_state][7],
+																}
+
+			data[:demand_state] = {	:reverse_voltage => data[:demand_state][0],
+															:over_voltage => data[:demand_state][1],
+															:over_current => data[:demand_state][2],
+															:over_power => data[:demand_state][3],
+															:over_temp => data[:demand_state][4],
+															:not_connected => data[:demand_state][5],
+															:constant_current => data[:demand_state][6],
+															:constant_voltage => data[:demand_state][7],
+															:constant_power => data[:demand_state][8],
+															:constant_resistance => data[:demand_state][9],
+														}
 			data[:voltage] = ('%.3f' % data[:voltage]).to_f
 			data[:current] = ('%.3f' % data[:current]).to_f
 			data[:power] = ('%.3f' % data[:power]).to_f

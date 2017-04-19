@@ -61,11 +61,11 @@ def discharge(amps)
 	sleep 1
 
 	pp @dcload.Remote(true)
-	pp @dcload.SetMode("\x04")
-	pp @dcload.GetMode()
+	pp @dcload.LoadEnable(false)
+	pp @dcload.SetMode("\x00")
 	pp @dcload.SetCurrent(amps)
+	pp @dcload.SetMode("\x04")
 	pp @dcload.SetBatMin(0.899)
-	pp @dcload.GetBatMin()
 	pp @dcload.LoadEnable(true)
 	pp @dcload.Remote(false)
 end
@@ -86,17 +86,10 @@ end
 #pp @dcload.GetCurrent
 
 #pp @dcload.ReadDisplay
-#pp @dcload.LoadEnable(false)
+#pp lo@dcloadad.LoadEnable(false)
 #pp @dcload.LoadEnable(false)
 #pp @dcload.Remote(false)
 
-#pp @dcload.SetBatMin(0.899)
-#pp @dcload.GetBatMin()
-#pp @dcload.GetMode()
-#pp @dcload.SetMode("\x03")
-#pp @dcload.GetMode()
-#pp @dcload.GetSense()
-#pp @dcload.Remote(false)
 
 #puts power.volt(3)
 #puts power.curr(30)
@@ -115,14 +108,9 @@ end
 #puts "gmax = ", gmax()
 #puts runm(1)
 
-discharge_amps = 30
+discharge_amps = 20
 
-#pp @dcload.Remote(true)
-#pp @dcload.LoadEnable(false)
-#pp @dcload.SetCurrent(discharge_amps)
-#pp @dcload.Remote(false)
-
-#charge(2.5, 30)
+charge(2.5, 30)
 #discharge(discharge_amps)
 
 #float()
@@ -139,7 +127,7 @@ peak_delta = 0
 
 while true
 	time = Time.now
-	volts, current, status = @power.getd
+	power_volts, power_current, power_status = @power.getd
 	set_volts, set_current = @power.gets
 	dmm_volts = @dmm.fetch
 	load_data = @dcload.ReadDisplay
@@ -148,8 +136,8 @@ while true
 	Stats.current(:load).gauge = load_data[:current]
 	Stats.power(:load).gauge = load_data[:power]
 	Stats.voltage(:dmm).gauge = dmm_volts
-	Stats.current(:power).gauge = current
-	Stats.voltage(:power).gauge = volts
+	Stats.current(:power).gauge = power_current
+	Stats.voltage(:power).gauge = power_volts
 	Stats.current(:power_set).gauge = set_current
 	Stats.voltage(:power_set).gauge = set_volts
 
@@ -168,12 +156,12 @@ while true
 	Stats.voltage(:dmm_max).gauge = max_volts
 	Stats.voltage(:dmm_min).gauge = min_volts
 
-	text = "#{time.utc.iso8601(3)}, #{dmm_volts}, #{drop}, #{rise}, #{max_volts}, #{min_volts}, #{volts}, #{current}, #{status}, #{set_current}, #{set_volts}, #{load_data[:voltage]}, #{load_data[:current]}, #{load_data[:power]}\n"
+	text = "#{time.utc.iso8601(3)}, #{dmm_volts}, #{drop}, #{rise}, #{max_volts}, #{min_volts}, #{power_volts}, #{power_current}, #{power_status}, #{set_current}, #{set_volts}, #{load_data[:voltage]}, #{load_data[:current]}, #{load_data[:power]}\n"
 	puts text
 	file.write(text)
 	file.flush
 
-	if volts >= (dmm_volts + 0.1) and drop >= 0.001 and dmm_volts >= 1.7
+	if power_volts >= (dmm_volts + 0.1) and drop >= 0.003 and dmm_volts >= 1.7
 		discharge(discharge_amps)
 		max_volts = 0
 		min_volts = 1000

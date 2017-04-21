@@ -161,7 +161,7 @@ while true
 	file.write(text)
 	file.flush
 
-	if power_volts >= (dmm_volts + 0.1) and drop >= 0.001 and dmm_volts >= 1.7
+	if power_volts >= (dmm_volts + 0.1) and drop >= 0.0002 and dmm_volts >= 1.7
 		discharge(discharge_amps)
 		max_volts = 0
 		min_volts = 1000

@@ -110,7 +110,7 @@ end
 
 discharge_amps = 20
 
-charge(2.5, 30)
+#charge(2.5, 30)
 #discharge(discharge_amps)
 
 #float()
@@ -161,13 +161,13 @@ while true
 	file.write(text)
 	file.flush
 
-	if power_volts >= (dmm_volts + 0.1) and drop >= 0.003 and dmm_volts >= 1.7
+	if power_volts >= (dmm_volts + 0.1) and drop >= 0.001 and dmm_volts >= 1.7
 		discharge(discharge_amps)
 		max_volts = 0
 		min_volts = 1000
 	end
 
-	if dmm_volts <= 0.899
+	if load_data[:current] == 0 && dmm_volts >= 1.3 && dmm_volts <= 1.4
 		charge(2.5, 30)
 		max_volts = 0
 		min_volts = 1000

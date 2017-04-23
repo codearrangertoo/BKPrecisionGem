@@ -9,6 +9,7 @@ module BKP
 			@sp = SerialPort.new(@config[:port_str], @config[:baud_rate], @config[:data_bits], @config[:stop_bits], @config[:parity])
 			@sp.flow_control = SerialPort::NONE
 			@sp.binmode
+			@sp.read_timeout = 2000
 			#puts @sp.methods
 			#puts @sp.get_signals
 		end

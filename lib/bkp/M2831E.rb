@@ -6,7 +6,8 @@ module BKP
 
     def initialize(config)        
       @sp = SerialPort.new(config[:port_str], config[:baud_rate], config[:data_bits], config[:stop_bits], config[:parity])
-      @sp.flow_control = SerialPort::SOFT
+      @sp.flow_control = SerialPort::NONE
+      @sp.read_timeout = 2000
     end
 
     def cmd(command)

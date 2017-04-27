@@ -210,6 +210,10 @@ while true
     @state[:float][:state] = true
   end
 
+  if @state[:discharging][:state] == true || @state[:charging][:state] == true
+    @state[:float][:state] = false
+  end
+
   pp @state
 
   if @state[:charging][:state] == true && power_volts >= (dmm_volts + 0.1) && drop >= 0.0002 && dmm_volts >= 1.8

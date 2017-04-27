@@ -11,12 +11,13 @@ module BKP
     end
 
     def cmd(command, retries = 0)
+      max_retries = 4
       @sp.write command + "\n"
       resp = @sp.gets("\n")
-      cmd(command, retries + 1) if resp == nil && retries <= 4
+      cmd(command, retries + 1) if resp == nil && retries <= max_retries
       if resp.chomp == command
         resp = @sp.gets("\n")
-        cmd(command, retries + 1) if resp == nil && retries <= 4
+        cmd(command, retries + 1) if resp == nil && retries <= max_retries
       end
       return resp.chomp
     end

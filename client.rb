@@ -7,6 +7,7 @@ require 'time'
 require 'collectd'
 require 'pp'
 
+#/dev/serial/by-id/usb-Arachnid_Labs_Ltd_Re\:load_Pro_DAXWOWW3-if00-port0
 
 @dcload = BKP::M8500.new({
       :port_str => "/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller-if00-port0",
@@ -229,7 +230,7 @@ while true
     min_volts = 1000
   end
 
-  if @state[:float][:state] == true && dmm_volts <= 1.47 # && drop >= 0.2
+  if @state[:battery][:charged] == true && @state[:float][:state] == true && dmm_volts <= 1.47 # && drop >= 0.2
     @state[:battery][:charged] = false
     discharge(discharge_amps)
     max_volts = 0

@@ -217,7 +217,7 @@ while true
 
   pp @state
 
-  if @state[:charging][:state] == true && power_volts >= (dmm_volts + 0.1) && drop >= 0.0002 && dmm_volts >= 1.8
+  if @state[:charging][:state] == true && power_volts >= (dmm_volts + 0.1) && drop >= 0.0003 && dmm_volts >= 1.7
     @state[:battery][:charged] = true
     float()
     max_volts = 0

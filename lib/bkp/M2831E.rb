@@ -17,7 +17,7 @@ module BKP
       cmd(command, retries + 1) if resp == nil && retries <= max_retries
       if resp.chomp == command
         resp = @sp.gets("\n")
-        cmd(command, retries + 1) if resp == nil && retries <= max_retries
+        cmd(command, retries) if resp == nil && retries <= max_retries
       end
       return resp.chomp
     end
